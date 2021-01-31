@@ -102,14 +102,13 @@ class App:
             else:
                 axis = np.where(a!=0)[0][0]
                 d = sum(a)
-                direction = d*self.r_cube.piece_width
                 for wf in self.r_cube.get_face(axis, d):
                     corners = wf.get_face(axis, d)
                     corners = corners[[0, 1, 3, 2]]
                     corners = transform.project_2d(corners, th1, th2) + np.array(center).reshape((1, 2, 1))
                     corners_tup = []
                     for c in corners:
-                        corners_tup.append(tuple(c))
+                        corners_tup.append((c[0][0], c[1][0]))
 
                     color = wf.colors[axis]
                     if not color == None:
