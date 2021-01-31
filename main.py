@@ -1,21 +1,48 @@
 import numpy as np
 import math as m
 import pygame
-import wireframe
+import random
 import rubiks
 import transform
 
 class App:
-    border_color = (0, 0, 0)
+    NUM_KEYS = [pygame.K_0,
+                pygame.K_1,
+                pygame.K_2,
+                pygame.K_3,
+                pygame.K_4,
+                pygame.K_5,
+                pygame.K_6,
+                pygame.K_7,
+                pygame.K_8,
+                pygame.K_9]
+
+
+    BORDER_COLORS = (0, 0, 0)
+
+    R_CUBE = rubiks.Rubiks(dim=[6, 6, 6])
+    MOVES = [[R_CUBE.R,
+              R_CUBE.Rp,
+              R_CUBE.L,
+              R_CUBE.Lp],
+             [R_CUBE.F,
+              R_CUBE.Fp,
+              R_CUBE.B,
+              R_CUBE.Bp],
+             [R_CUBE.U,
+              R_CUBE.Up,
+              R_CUBE.D,
+              R_CUBE.Dp]]
+
+    angles = [m.pi / 6, m.pi / 6]
+    sensitivity = [m.pi / 12, m.pi / 12]
+
+    s_i = 0
+
     def __init__(self):
         self.running = True
         self._display_surf = None
         self.size = self.width, self.height = (800, 600)
-
-        self.wf = wireframe.Wireframe(width=100)
-        self.r_cube = rubiks.Rubiks(dim=[3, 3, 3])
-        self.angles = [m.pi/6, m.pi/6]
-        self.sensitivity = [m.pi/12, m.pi/12]
 
     def on_init(self):
         pygame.init()
@@ -33,20 +60,25 @@ class App:
             if event.mod & pygame.KMOD_CTRL:
                 if event.key == pygame.K_q:
                     self.running = False
+                elif event.key == pygame.K_RETURN:
+                    self.scramble_cube(20)
+
+            elif event.key in self.NUM_KEYS:
+                self.s_i = int(event.unicode) # Slice Index
 
             elif event.mod & pygame.KMOD_SHIFT:
                 if event.key == pygame.K_r:
-                    self.r_cube.Rp()
+                    self.R_CUBE.Rp(self.s_i)
                 elif event.key == pygame.K_u:
-                    self.r_cube.Up()
+                    self.R_CUBE.Up(self.s_i)
                 elif event.key == pygame.K_f:
-                    self.r_cube.Fp()
+                    self.R_CUBE.Fp(self.s_i)
                 elif event.key == pygame.K_l:
-                    self.r_cube.Lp()
+                    self.R_CUBE.Lp(self.s_i)
                 elif event.key == pygame.K_d:
-                    self.r_cube.Dp()
+                    self.R_CUBE.Dp(self.s_i)
                 elif event.key == pygame.K_b:
-                    self.r_cube.Bp()
+                    self.R_CUBE.Bp(self.s_i)
 
             else:
                 if event.key == pygame.K_RIGHT:
@@ -59,17 +91,17 @@ class App:
                     self.angles[1] -= self.sensitivity[1]
 
                 elif event.key == pygame.K_r:
-                    self.r_cube.R()
+                    self.R_CUBE.R(self.s_i)
                 elif event.key == pygame.K_u:
-                    self.r_cube.U()
+                    self.R_CUBE.U(self.s_i)
                 elif event.key == pygame.K_f:
-                    self.r_cube.F()
+                    self.R_CUBE.F(self.s_i)
                 elif event.key == pygame.K_l:
-                    self.r_cube.L()
+                    self.R_CUBE.L(self.s_i)
                 elif event.key == pygame.K_d:
-                    self.r_cube.D()
+                    self.R_CUBE.D(self.s_i)
                 elif event.key == pygame.K_b:
-                    self.r_cube.B()
+                    self.R_CUBE.B(self.s_i)
 
     def on_loop(self):
         pass
@@ -87,7 +119,7 @@ class App:
             if not (a==0).all():
                 axis = np.where(a!=0)[0][0]
                 d = sum(a)
-                for wf in self.r_cube.get_face(axis, d):
+                for wf in self.R_CUBE.get_face(axis, d):
                     corners = wf.get_face(axis, d)
                     corners = corners[[0, 1, 3, 2]]
                     corners = transform.project_2d(corners, th1, th2) + np.array(center).reshape((1, 2, 1))
@@ -97,7 +129,7 @@ class App:
 
                     color = wf.colors[axis]
                     if not color == None:
-                        self.draw_polygon(corners_tup, color, borders=8, border_color=self.border_color) 
+                        self.draw_polygon(corners_tup, color, borders=8, border_color=self.BORDER_COLORS)
 
     def get_visible_axes(self, angles = None):
         if angles == None:
@@ -162,6 +194,13 @@ class App:
     def on_cleanup(self):
         pygame.display.quit()
         pygame.quit()
+
+    def scramble_cube(self, n=20):
+        for _ in range(n):
+            axis = random.randint(0, 2)
+            slice_index = random.randint(0, self.R_CUBE.dim[axis]-1)
+
+            random.choice(App.MOVES[axis])(slice_index)
 
 
 if __name__ == '__main__':
