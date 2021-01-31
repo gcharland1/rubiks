@@ -20,7 +20,7 @@ class App:
 
     BORDER_COLORS = (0, 0, 0)
 
-    R_CUBE = rubiks.Rubiks(dim=[6, 6, 6])
+    R_CUBE = rubiks.Rubiks(dim=[3, 3, 3])
     MOVES = [[R_CUBE.R,
               R_CUBE.Rp,
               R_CUBE.L,
@@ -37,12 +37,13 @@ class App:
     angles = [m.pi / 6, m.pi / 6]
     sensitivity = [m.pi / 12, m.pi / 12]
 
-    s_i = 0
 
     def __init__(self):
         self.running = True
         self._display_surf = None
         self.size = self.width, self.height = (800, 600)
+
+        self.s_i = 0  # Slice Index
 
     def on_init(self):
         pygame.init()
@@ -61,10 +62,10 @@ class App:
                 if event.key == pygame.K_q:
                     self.running = False
                 elif event.key == pygame.K_RETURN:
-                    self.scramble_cube(20)
+                    self.scramble_cube()
 
             elif event.key in self.NUM_KEYS:
-                self.s_i = int(event.unicode) # Slice Index
+                self.s_i = int(event.unicode)
 
             elif event.mod & pygame.KMOD_SHIFT:
                 if event.key == pygame.K_r:
@@ -192,15 +193,19 @@ class App:
         self.on_cleanup()
 
     def on_cleanup(self):
-        pygame.display.quit()
+        pygame.display.quit() 
         pygame.quit()
 
-    def scramble_cube(self, n=20):
+    def scramble_cube(self, n=None):
+        if n is None:
+            n = max([np.prod(self.R_CUBE.dim)//2, 100])
+
         for _ in range(n):
             axis = random.randint(0, 2)
-            slice_index = random.randint(0, self.R_CUBE.dim[axis]-1)
+            slice = random.randint(0, self.R_CUBE.dim[axis]-1)
+            face = random.randint(0, len(App.MOVES[axis])-1)
 
-            random.choice(App.MOVES[axis])(slice_index)
+            App.MOVES[axis][face](slice)
 
 
 if __name__ == '__main__':

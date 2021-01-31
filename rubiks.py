@@ -15,7 +15,7 @@ class Rubiks:
     def __init__(self, dim=None, width=300):
         if dim is None:
             dim = [3, 3, 3]
-        self.dim = self.nx, self.ny, self.nz = dim
+        self.dim = [self.nx, self.ny, self.nz] = dim
         self.cube = np.zeros((self.nx, self.ny, self.nz), dtype='object')
         self.width = width
         self.piece_width = width / max(self.dim)
