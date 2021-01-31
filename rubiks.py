@@ -23,11 +23,8 @@ class Rubiks:
         self.initialize_cube()
 
     def initialize_cube(self):
-        d_i = (self.nx-1)/2
-        d_j = (self.ny-1)/2
-        d_k = (self.nz-1)/2
+
         for i in range(self.nx):
-            x = (i-d_i)*self.piece_width
             if i == 0:
                 cx = self.colors[3]
             elif i == self.nx-1:
@@ -36,7 +33,6 @@ class Rubiks:
                 cx = None
             
             for j in range(self.ny):
-                y = (j-d_j)*self.piece_width
                 if j == 0:
                     cy = self.colors[4]
                 elif j == self.ny-1:
@@ -45,100 +41,102 @@ class Rubiks:
                     cy = None
                 
                 for k in range(self.nz):
-                    z = (k-d_k)*self.piece_width
                     if k == 0:
                         cz = self.colors[5]
                     elif k == self.nz-1:
                         cz = self.colors[2]
                     else:
                         cz = None
-                    
-                    self.cube[i,j,k] = wireframe.Wireframe([x, y, z], self.piece_width, colors=[cx, cy, cz])
+
+                    position = self.compute_pieces_positions(i, j, k)
+                    self.cube[i,j,k] = wireframe.Wireframe(position, self.piece_width, colors=[cx, cy, cz])
+
+    def compute_pieces_positions(self, i, j, k):
+        d_i = (self.nx - 1) / 2
+        d_j = (self.ny - 1) / 2
+        d_k = (self.nz - 1) / 2
+        x = (i - d_i) * self.piece_width
+        y = (j-d_j)*self.piece_width
+        z = (k-d_k)*self.piece_width
+        return [x, y, z]
 
     def R(self):
-        self.cube[2,:,:] = np.rot90(self.cube[2,:,:])
-        x = 1*self.piece_width
-        for j in range(3):
-            y = (j-1)*self.piece_width
-            for k in range(3):
-                z = (k-1)*self.piece_width
-                self.cube[2,j,k].change_position([x,y,z])
-                self.cube[2,j,k].rotate(1, 2)
+        i = self.nx-1
+        self.cube[i,:,:] = np.rot90(self.cube[i,:,:])
+        for j in range(self.ny):
+            for k in range(self.nz):
+                position = self.compute_pieces_positions(i, j, k)
+                self.cube[i,j,k].change_position(position)
+                self.cube[i,j,k].rotate(1, 2)
 
     def Rp(self):
         for _ in range(3):
             self.R()
 
     def Lp(self):
-        self.cube[0,:,:] = np.rot90(self.cube[0,:,:])
-        x = -1*self.piece_width
-        for j in range(3):
-            y = (j-1)*self.piece_width
-            for k in range(3):
-                z = (k-1)*self.piece_width
-                self.cube[0,j,k].change_position([x,y,z])
-                self.cube[0,j,k].rotate(1, 2)
+        i = 0
+        self.cube[i,:,:] = np.rot90(self.cube[i,:,:])
+        for j in range(self.ny):
+            for k in range(self.nz):
+                position = self.compute_pieces_positions(i, j, k)
+                self.cube[i,j,k].change_position(position)
+                self.cube[i,j,k].rotate(1, 2)
 
     def L(self):
         for _ in range(3):
             self.Lp()
 
-    def F(self):
-        self.cube[:,2,:] = np.rot90(self.cube[:,2,:])
-        y = 1*self.piece_width
-        for i in range(3):
-            x = (i-1)*self.piece_width
-            for k in range(3):
-                z = (k-1)*self.piece_width
-                self.cube[i,2,k].change_position([x,y,z])
-                self.cube[i,2,k].rotate(0, 2)
-
-    def Fp(self):
-        for _ in range(3):
-            self.F()
-
-    def B(self):
-        self.cube[:,0,:] = np.rot90(self.cube[:,0,:])
-        y = -1*self.piece_width
-        for i in range(3):
-            x = (i-1)*self.piece_width
-            for k in range(3):
-                z = (k-1)*self.piece_width
-                self.cube[i,0,k].change_position([x,y,z])
-                self.cube[i,0,k].rotate(0, 2)
-
-    def Bp(self):
-        for _ in range(3):
-            self.B()
-
     def U(self):
-        self.cube[:,:,2] = np.rot90(self.cube[:,:,2])
-        z = 1*self.piece_width
-        for i in range(3):
-            x = (i-1)*self.piece_width
-            for j in range(3):
-                y = (j-1)*self.piece_width
-                self.cube[i,j,2].change_position([x,y,z])
-                self.cube[i,j,2].rotate(0, 1)
+        k = self.nz-1
+        self.cube[:,:,k] = np.rot90(self.cube[:,:,k])
+        for i in range(self.nx):
+            for j in range(self.ny):
+                position = self.compute_pieces_positions(i, j, k)
+                self.cube[i,j,k].change_position(position)
+                self.cube[i,j,k].rotate(0, 1)
 
     def Up(self):
         for _ in range(3):
             self.U()
 
     def Dp(self):
-        self.cube[:,:,0] = np.rot90(self.cube[:,:,0])
-        z = -1*self.piece_width
-        for i in range(3):
-            x = (i-1)*self.piece_width
-            for j in range(3):
-                y = (j-1)*self.piece_width
-                self.cube[i,j,0].change_position([x,y,z])
-                self.cube[i,j,0].rotate(0, 1)
+        k = 0
+        self.cube[:,:,k] = np.rot90(self.cube[:,:,k])
+        for i in range(self.nx):
+            for j in range(self.ny):
+                position = self.compute_pieces_positions(i, j, k)
+                self.cube[i,j,k].change_position(position)
+                self.cube[i,j,k].rotate(0, 1)
 
     def D(self):
         for _ in range(3):
             self.Dp()
 
+    def Fp(self):
+        j = self.ny-1
+        self.cube[:,j,:] = np.rot90(self.cube[:,j,:])
+        for i in range(self.nx):
+            for k in range(self.nz):
+                position = self.compute_pieces_positions(i, j, k)
+                self.cube[i,j,k].change_position(position)
+                self.cube[i,j,k].rotate(0, 2)
+
+    def F(self):
+        for _ in range(3):
+            self.Fp()
+
+    def B(self):
+        j = 0
+        self.cube[:,j,:] = np.rot90(self.cube[:,j,:])
+        for i in range(self.nx):
+            for k in range(self.nz):
+                position = self.compute_pieces_positions(i, j, k)
+                self.cube[i,j,k].change_position(position)
+                self.cube[i,j,k].rotate(0, 2)
+
+    def Bp(self):
+        for _ in range(3):
+            self.B()
 
     def get_face(self, axis=0, direction=1):
         if direction > 0:

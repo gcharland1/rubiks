@@ -13,7 +13,7 @@ class App:
         self.size = self.width, self.height = (800, 600)
 
         self.wf = wireframe.Wireframe(width=100)
-        self.r_cube = rubiks.Rubiks(dim=[3, 5, 7])
+        self.r_cube = rubiks.Rubiks(dim=[7, 7, 7])
         self.angles = [m.pi/6, m.pi/6]
         self.sensitivity = [m.pi/12, m.pi/12]
 
