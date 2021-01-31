@@ -12,39 +12,43 @@ class Rubiks:
     colors = [RED, BLUE, YELLOW, ORANGE, GREEN, WHITE]
 
 
-    def __init__(self, dim = (3, 3, 3), width = 300):
+    def __init__(self, dim = None, width = 300):
+        if dim is None:
+            dim = [3, 3, 3]
         self.dim = self.nx, self.ny, self.nz  = dim
-        self.cube = np.zeros((dim), dtype='object')
+        self.cube = np.zeros((self.nx, self.ny, self.nz), dtype='object')
         self.width = width
         self.piece_width = width/max(self.dim)
 
         self.initialize_cube()
 
     def initialize_cube(self):
-        color = [None, None, None]
+        d_i = (self.nx-1)/2
+        d_j = (self.ny-1)/2
+        d_k = (self.nz-1)/2
         for i in range(self.nx):
-            x = (i-1)*self.piece_width
-            if i-1 < 0:
+            x = (i-d_i)*self.piece_width
+            if i == 0:
                 cx = self.colors[3]
-            elif i-1 > 0:
+            elif i == self.nx-1:
                 cx = self.colors[0]
             else:
                 cx = None
             
             for j in range(self.ny):
-                y = (j-1)*self.piece_width
-                if j-1 < 0:
+                y = (j-d_j)*self.piece_width
+                if j == 0:
                     cy = self.colors[4]
-                elif j-1 > 0:
+                elif j == self.ny-1:
                     cy = self.colors[1]
                 else:
                     cy = None
                 
                 for k in range(self.nz):
-                    z = (k-1)*self.piece_width
-                    if k-1 < 0:
+                    z = (k-d_k)*self.piece_width
+                    if k == 0:
                         cz = self.colors[5]
-                    elif k-1 > 0:
+                    elif k == self.nz-1:
                         cz = self.colors[2]
                     else:
                         cz = None
@@ -62,7 +66,7 @@ class Rubiks:
                 self.cube[2,j,k].rotate(1, 2)
 
     def Rp(self):
-        for i in range(3):
+        for _ in range(3):
             self.R()
 
     def Lp(self):
@@ -76,7 +80,7 @@ class Rubiks:
                 self.cube[0,j,k].rotate(1, 2)
 
     def L(self):
-        for i in range(3):
+        for _ in range(3):
             self.Lp()
 
     def F(self):
@@ -90,7 +94,7 @@ class Rubiks:
                 self.cube[i,2,k].rotate(0, 2)
 
     def Fp(self):
-        for i in range(3):
+        for _ in range(3):
             self.F()
 
     def B(self):
@@ -104,7 +108,7 @@ class Rubiks:
                 self.cube[i,0,k].rotate(0, 2)
 
     def Bp(self):
-        for i in range(3):
+        for _ in range(3):
             self.B()
 
     def U(self):
@@ -118,7 +122,7 @@ class Rubiks:
                 self.cube[i,j,2].rotate(0, 1)
 
     def Up(self):
-        for i in range(3):
+        for _ in range(3):
             self.U()
 
     def Dp(self):
@@ -132,12 +136,15 @@ class Rubiks:
                 self.cube[i,j,0].rotate(0, 1)
 
     def D(self):
-        for i in range(3):
+        for _ in range(3):
             self.Dp()
 
 
     def get_face(self, axis=0, direction=1):
-        d = direction + 1 # Index of np slice
+        if direction > 0:
+            d = self.dim[axis] - 1
+        else:
+            d = 0
         if axis == 0:
             pieces = self.cube[d,:,:]
 
