@@ -1,5 +1,6 @@
 import numpy as np
-import wireframe 
+import wireframe
+
 
 class Rubiks:
     RED = (255, 0, 0)
@@ -8,17 +9,16 @@ class Rubiks:
     GREEN = (62, 225, 62)
     WHITE = (255, 255, 255)
     YELLOW = (255, 255, 0)
-    
+
     colors = [RED, BLUE, YELLOW, ORANGE, GREEN, WHITE]
 
-
-    def __init__(self, dim = None, width = 300):
+    def __init__(self, dim=None, width=300):
         if dim is None:
             dim = [3, 3, 3]
-        self.dim = self.nx, self.ny, self.nz  = dim
+        self.dim = self.nx, self.ny, self.nz = dim
         self.cube = np.zeros((self.nx, self.ny, self.nz), dtype='object')
         self.width = width
-        self.piece_width = width/max(self.dim)
+        self.piece_width = width / max(self.dim)
 
         self.initialize_cube()
 
@@ -27,47 +27,47 @@ class Rubiks:
         for i in range(self.nx):
             if i == 0:
                 cx = self.colors[3]
-            elif i == self.nx-1:
+            elif i == self.nx - 1:
                 cx = self.colors[0]
             else:
                 cx = None
-            
+
             for j in range(self.ny):
                 if j == 0:
                     cy = self.colors[4]
-                elif j == self.ny-1:
+                elif j == self.ny - 1:
                     cy = self.colors[1]
                 else:
                     cy = None
-                
+
                 for k in range(self.nz):
                     if k == 0:
                         cz = self.colors[5]
-                    elif k == self.nz-1:
+                    elif k == self.nz - 1:
                         cz = self.colors[2]
                     else:
                         cz = None
 
                     position = self.compute_pieces_positions(i, j, k)
-                    self.cube[i,j,k] = wireframe.Wireframe(position, self.piece_width, colors=[cx, cy, cz])
+                    self.cube[i, j, k] = wireframe.Wireframe(position, self.piece_width, colors=[cx, cy, cz])
 
     def compute_pieces_positions(self, i, j, k):
         d_i = (self.nx - 1) / 2
         d_j = (self.ny - 1) / 2
         d_k = (self.nz - 1) / 2
         x = (i - d_i) * self.piece_width
-        y = (j-d_j)*self.piece_width
-        z = (k-d_k)*self.piece_width
+        y = (j - d_j) * self.piece_width
+        z = (k - d_k) * self.piece_width
         return [x, y, z]
 
     def R(self):
-        i = self.nx-1
-        self.cube[i,:,:] = np.rot90(self.cube[i,:,:])
+        i = self.nx - 1
+        self.cube[i, :, :] = np.rot90(self.cube[i, :, :])
         for j in range(self.ny):
             for k in range(self.nz):
                 position = self.compute_pieces_positions(i, j, k)
-                self.cube[i,j,k].change_position(position)
-                self.cube[i,j,k].rotate(1, 2)
+                self.cube[i, j, k].change_position(position)
+                self.cube[i, j, k].rotate(1, 2)
 
     def Rp(self):
         for _ in range(3):
@@ -75,25 +75,25 @@ class Rubiks:
 
     def Lp(self):
         i = 0
-        self.cube[i,:,:] = np.rot90(self.cube[i,:,:])
+        self.cube[i, :, :] = np.rot90(self.cube[i, :, :])
         for j in range(self.ny):
             for k in range(self.nz):
                 position = self.compute_pieces_positions(i, j, k)
-                self.cube[i,j,k].change_position(position)
-                self.cube[i,j,k].rotate(1, 2)
+                self.cube[i, j, k].change_position(position)
+                self.cube[i, j, k].rotate(1, 2)
 
     def L(self):
         for _ in range(3):
             self.Lp()
 
     def U(self):
-        k = self.nz-1
-        self.cube[:,:,k] = np.rot90(self.cube[:,:,k])
+        k = self.nz - 1
+        self.cube[:, :, k] = np.rot90(self.cube[:, :, k])
         for i in range(self.nx):
             for j in range(self.ny):
                 position = self.compute_pieces_positions(i, j, k)
-                self.cube[i,j,k].change_position(position)
-                self.cube[i,j,k].rotate(0, 1)
+                self.cube[i, j, k].change_position(position)
+                self.cube[i, j, k].rotate(0, 1)
 
     def Up(self):
         for _ in range(3):
@@ -101,25 +101,25 @@ class Rubiks:
 
     def Dp(self):
         k = 0
-        self.cube[:,:,k] = np.rot90(self.cube[:,:,k])
+        self.cube[:, :, k] = np.rot90(self.cube[:, :, k])
         for i in range(self.nx):
             for j in range(self.ny):
                 position = self.compute_pieces_positions(i, j, k)
-                self.cube[i,j,k].change_position(position)
-                self.cube[i,j,k].rotate(0, 1)
+                self.cube[i, j, k].change_position(position)
+                self.cube[i, j, k].rotate(0, 1)
 
     def D(self):
         for _ in range(3):
             self.Dp()
 
     def Fp(self):
-        j = self.ny-1
-        self.cube[:,j,:] = np.rot90(self.cube[:,j,:])
+        j = self.ny - 1
+        self.cube[:, j, :] = np.rot90(self.cube[:, j, :])
         for i in range(self.nx):
             for k in range(self.nz):
                 position = self.compute_pieces_positions(i, j, k)
-                self.cube[i,j,k].change_position(position)
-                self.cube[i,j,k].rotate(0, 2)
+                self.cube[i, j, k].change_position(position)
+                self.cube[i, j, k].rotate(0, 2)
 
     def F(self):
         for _ in range(3):
@@ -127,12 +127,12 @@ class Rubiks:
 
     def B(self):
         j = 0
-        self.cube[:,j,:] = np.rot90(self.cube[:,j,:])
+        self.cube[:, j, :] = np.rot90(self.cube[:, j, :])
         for i in range(self.nx):
             for k in range(self.nz):
                 position = self.compute_pieces_positions(i, j, k)
-                self.cube[i,j,k].change_position(position)
-                self.cube[i,j,k].rotate(0, 2)
+                self.cube[i, j, k].change_position(position)
+                self.cube[i, j, k].rotate(0, 2)
 
     def Bp(self):
         for _ in range(3):
@@ -144,29 +144,19 @@ class Rubiks:
         else:
             d = 0
         if axis == 0:
-            pieces = self.cube[d,:,:]
+            pieces = self.cube[d, :, :]
 
         elif axis == 1:
-            pieces = self.cube[:,d,:]
+            pieces = self.cube[:, d, :]
 
         elif axis == 2:
-            pieces = self.cube[:,:,d]
+            pieces = self.cube[:, :, d]
         else:
             print('Unknown axis', axis)
             return np.array([])
 
         return pieces.ravel()
 
-    def cli_display(self):
-        print(self.state[0:3].center(9, ' '))
-        print(self.state[3:6].center(9, ' '))
-        print(self.state[6:9].center(9, ' '))
-        print(self.state[9:21])
-        print(self.state[21:33])
-        print(self.state[33:45])
-        print(self.state[45:48].center(9, ' '))
-        print(self.state[48:51].center(9, ' '))
-        print(self.state[51:54].center(9, ' '))
 
-if __name__=='__main__':
+if __name__ == '__main__':
     cube = Rubiks()

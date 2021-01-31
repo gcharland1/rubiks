@@ -13,7 +13,7 @@ class App:
         self.size = self.width, self.height = (800, 600)
 
         self.wf = wireframe.Wireframe(width=100)
-        self.r_cube = rubiks.Rubiks(dim=[7, 7, 7])
+        self.r_cube = rubiks.Rubiks(dim=[3, 3, 3])
         self.angles = [m.pi/6, m.pi/6]
         self.sensitivity = [m.pi/12, m.pi/12]
 
@@ -27,7 +27,9 @@ class App:
         self.running = True
     
     def on_event(self, event):
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.QUIT:
+            self.running = False
+        elif event.type == pygame.KEYDOWN:
             if event.mod & pygame.KMOD_CTRL:
                 if event.key == pygame.K_q:
                     self.running = False
