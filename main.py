@@ -13,14 +13,17 @@ class App:
         self.size = self.width, self.height = (800, 600)
 
         self.wf = wireframe.Wireframe(width=100)
-        self.r_cube = rubiks.Rubiks()
+        self.r_cube = rubiks.Rubiks(dim=(3,3,3))
         self.angles = [m.pi/6, m.pi/6]
+        self.sensitivity = [m.pi/12, m.pi/12]
 
     def on_init(self):
         pygame.init()
         self._display_surf = pygame.display.set_mode(self.size)
         self._display_surf.fill((0, 0, 0))
+
         self.on_render()
+
         self.running = True
     
     def on_event(self, event):
@@ -32,62 +35,44 @@ class App:
             elif event.mod & pygame.KMOD_SHIFT:
                 if event.key == pygame.K_r:
                     self.r_cube.Rp()
-                    self.on_render()
                 elif event.key == pygame.K_u:
                     self.r_cube.Up()
-                    self.on_render()
                 elif event.key == pygame.K_f:
                     self.r_cube.Fp()
-                    self.on_render()
                 elif event.key == pygame.K_l:
                     self.r_cube.Lp()
-                    self.on_render()
                 elif event.key == pygame.K_d:
                     self.r_cube.Dp()
-                    self.on_render()
                 elif event.key == pygame.K_b:
                     self.r_cube.Bp()
-                    self.on_render()
 
             else:
                 if event.key == pygame.K_RIGHT:
-                    self.angles[0] -= m.pi/6
-                    self.on_render()
+                    self.angles[0] -= self.sensitivity[0]
                 elif event.key == pygame.K_LEFT:
-                    self.angles[0] += m.pi/6
-                    self.on_render()
+                    self.angles[0] += self.sensitivity[0]
                 elif event.key == pygame.K_UP:
-                    self.angles[1] += m.pi/6
-                    self.on_render()
+                    self.angles[1] += self.sensitivity[1]
                 elif event.key == pygame.K_DOWN:
-                    self.angles[1] -= m.pi/6
-                    self.on_render()
+                    self.angles[1] -= self.sensitivity[1]
 
                 elif event.key == pygame.K_r:
                     self.r_cube.R()
-                    self.on_render()
                 elif event.key == pygame.K_u:
                     self.r_cube.U()
-                    self.on_render()
                 elif event.key == pygame.K_f:
                     self.r_cube.F()
-                    self.on_render()
                 elif event.key == pygame.K_l:
                     self.r_cube.L()
-                    self.on_render()
                 elif event.key == pygame.K_d:
                     self.r_cube.D()
-                    self.on_render()
                 elif event.key == pygame.K_b:
                     self.r_cube.B()
-                    self.on_render()
-
 
     def on_loop(self):
         pass
 
     def on_render(self):
-        axis = [1, 1, 1]
         self._display_surf.fill((0, 0, 0))
         self.display_cube()
         pygame.display.flip()
@@ -97,9 +82,7 @@ class App:
         axes_2display = self.get_visible_axes(self.angles)
         th1, th2 = self.angles
         for a in axes_2display:
-            if (a==0).all():
-                next
-            else:
+            if not (a==0).all():
                 axis = np.where(a!=0)[0][0]
                 d = sum(a)
                 for wf in self.r_cube.get_face(axis, d):
@@ -114,7 +97,9 @@ class App:
                     if not color == None:
                         self.draw_polygon(corners_tup, color, borders=8, border_color=self.border_color) 
 
-    def get_visible_axes(self, angles = [m.pi/6, m.pi/6]):
+    def get_visible_axes(self, angles = None):
+        if angles == None:
+            angles = self.angles
         th1, th2 = angles
         axes = np.array([[1, 0, 0], [-1, 0, 0],
                          [0, 1, 0], [0, -1, 0],
@@ -123,16 +108,15 @@ class App:
 
         return axes[(axes_2d > 0)]
  
-    def draw_wireframe(self, wf,  angles = [m.pi/6, m.pi/6], borders=2, filled = False):
+    def draw_wireframe(self, wf, center=(400, 300), angles=None, borders=2, filled = False):
+        if angles == None:
+            angles = self.angles
         th1, th2 = angles
         axes_2display = self.get_visible_axes(angles)
         
-        
-        center = (400, 300)
+
         for a in axes_2display:
-            if (a==0).all():
-                next
-            else:
+            if not (a==0).all():
                 axis = np.where(a!=0)[0][0]
                 direction =sum(a)
                 corners = wf.get_face(axis, direction)
@@ -144,16 +128,15 @@ class App:
 
                 if filled:
                     if direction == -1:
-                        color = self.colors[axis + 3]
+                        color = rubiks.colors[axis + 3]
                     else:
-                        color = self.colors[axis]
+                        color = rubiks.colors[axis]
                     border_color = (0, 0, 0)
                 else:
                     color = None
                     border_color = (200, 200, 200)
 
                 self.draw_polygon(corners_tup, color, borders=borders, border_color=border_color) 
-                
 
     def draw_polygon(self, corners, color = None, borders=2, border_color=(255,255,255)):
         if borders != 0:
@@ -170,7 +153,7 @@ class App:
                 self.on_event(event)
 
             self.on_loop()
-            #self.on_render()
+            self.on_render()
 
         self.on_cleanup()
 

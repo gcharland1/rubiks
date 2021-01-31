@@ -41,8 +41,3 @@ def isometric(coordinates):
         results[i] = np.linalg.multi_dot([R2, R1, coordinates[i]])/np.sqrt(6)
 
     return results[:,0:2,:]
-
-
-if __name__ == '__main__':
-    a = [[[1, 1, 1], [-1, 1, 1]], [[1, -1, 1], [-1, -1, 1]]] 
-    print(transform_2d(a, 45, 45))
