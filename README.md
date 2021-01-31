@@ -16,3 +16,6 @@
 
 ### Quit the app
 - Press Ctrl+Q
+
+## Screenshots
+![image](https://user-images.githubusercontent.com/76267249/106371658-e2d52200-6334-11eb-8a98-4b5e9473578e.png)
