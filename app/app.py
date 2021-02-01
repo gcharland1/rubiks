@@ -19,6 +19,7 @@ class App:
 
 
     BORDER_COLORS = (0, 0, 0)
+    MENU_COLOR = (50, 80, 50)
 
     R_CUBE = rubiks.Rubiks(dim=[3, 3, 3])
     MOVES = [[R_CUBE.R,
@@ -54,6 +55,31 @@ class App:
 
         self.running = True
     
+    def new_cube(self):
+        self._display_surf.fill(App.MENU_COLOR)
+        pygame.display.flip()
+
+        new_dimensions = np.array([None, None, None])
+        index = 0
+        return_to_game = False
+        while not return_to_game:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    break
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_TAB:
+                        index += 1
+                        if index > 2:
+                            index = 0
+                    if event.key == pygame.K_RETURN:
+                        return_to_game = True
+                    if event.key in App.NUM_KEYS:
+                        new_dimensions[index] = int(event.unicode)
+
+        if not np.any(new_dimensions == None):                
+            self.R_CUBE = rubiks.Rubiks(dim=new_dimensions)
+
     def on_event(self, event):
         if event.type == pygame.QUIT:
             self.running = False
@@ -61,13 +87,24 @@ class App:
             if event.mod & pygame.KMOD_CTRL:
                 if event.key == pygame.K_q:
                     self.running = False
-                elif event.key == pygame.K_RETURN:
+                elif event.key == pygame.K_SPACE:
                     self.scramble_cube()
+                elif event.key == pygame.K_RETURN:
+                    self.new_cube()
 
             elif event.key in self.NUM_KEYS:
                 self.s_i = int(event.unicode)
 
             elif event.mod & pygame.KMOD_SHIFT:
+                if event.key == pygame.K_RIGHT:
+                    self.angles[0] -= np.pi/2
+                elif event.key == pygame.K_LEFT:
+                    self.angles[0] += np.pi/2
+                elif event.key == pygame.K_UP:
+                    self.angles[1] += np.pi/2
+                elif event.key == pygame.K_DOWN:
+                    self.angles[1] -= np.pi/2
+
                 if event.key == pygame.K_r:
                     self.R_CUBE.Rp(self.s_i)
                 elif event.key == pygame.K_u:
