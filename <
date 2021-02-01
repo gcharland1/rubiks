@@ -22,8 +22,20 @@ class App:
     MENU_COLOR = (50, 80, 50)
 
     R_CUBE = rubiks.Rubiks(dim=[3, 3, 3])
+    MOVES = [[R_CUBE.R,
+              R_CUBE.Rp,
+              R_CUBE.L,
+              R_CUBE.Lp],
+             [R_CUBE.F,
+              R_CUBE.Fp,
+              R_CUBE.B,
+              R_CUBE.Bp],
+             [R_CUBE.U,
+              R_CUBE.Up,
+              R_CUBE.D,
+              R_CUBE.Dp]]
 
-    angles = [m.pi / 6, m.pi / 3]
+    angles = [m.pi / 6, m.pi / 6]
     sensitivity = [m.pi / 12, m.pi / 12]
 
 
@@ -33,25 +45,13 @@ class App:
         self.size = self.width, self.height = (800, 600)
 
         self.s_i = 0  # Slice Index
-        
-    def on_init(self):
-        self._display_surf = pygame.display.set_mode(self.size)
- 
-        self.MOVES = [[self.R_CUBE.R,
-                  self.R_CUBE.Rp,
-                  self.R_CUBE.L,
-                  self.R_CUBE.Lp],
-                 [self.R_CUBE.F,
-                  self.R_CUBE.Fp,
-                  self.R_CUBE.B,
-                  self.R_CUBE.Bp],
-                 [self.R_CUBE.U,
-                  self.R_CUBE.Up,
-                  self.R_CUBE.D,
-                  self.R_CUBE.Dp]]
-                 
-        self.on_render()
 
+    def on_init(self):
+        pygame.init()
+        self._display_surf = pygame.display.set_mode(self.size)
+        self._display_surf.fill((0, 0, 0))
+
+        self.on_render()
 
         self.running = True
     
@@ -67,23 +67,21 @@ class App:
                 if event.type == pygame.QUIT:
                     self.running = False
                     break
+                if event.type == pygame.ESCAPE:
+                    new_dimensions = False
+                    break
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        return_to_game = True
-                        new_dimensions[0] = None
-                        break
-                    elif event.key == pygame.K_TAB:
+                    if event.key == pygame.K_TAB:
                         index += 1
                         if index > 2:
                             index = 0
-                    elif event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_RETURN:
                         return_to_game = True
-                    elif event.key in App.NUM_KEYS:
+                    if event.key in App.NUM_KEYS:
                         new_dimensions[index] = int(event.unicode)
 
         if not np.any(new_dimensions == None):                
-            self.R_CUBE = rubiks.Rubiks(new_dimensions)
-            self.on_init()
+            self.R_CUBE = rubiks.Rubiks(dim=new_dimensions)
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
@@ -222,7 +220,6 @@ class App:
             pygame.draw.polygon(self._display_surf, color, corners)
         
     def on_execute(self):
-        pygame.init()
         if self.on_init() == False:
             self.running = False
 
@@ -245,10 +242,10 @@ class App:
 
         for _ in range(n):
             axis = random.randint(0, 2)
-            depth = random.randint(0, self.R_CUBE.dim[axis]-1)
-            face = random.randint(0, len(self.MOVES[axis])-1)
+            slice = random.randint(0, self.R_CUBE.dim[axis]-1)
+            face = random.randint(0, len(App.MOVES[axis])-1)
 
-            self.MOVES[axis][face](depth)
+            App.MOVES[axis][face](slice)
 
 
 if __name__ == '__main__':
