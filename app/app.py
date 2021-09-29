@@ -33,10 +33,10 @@ class App:
         self.size = self.width, self.height = (800, 600)
 
         self.s_i = 0  # Slice Index
-        
+
     def on_init(self):
         self._display_surf = pygame.display.set_mode(self.size)
- 
+
         self.MOVES = [[self.R_CUBE.R,
                   self.R_CUBE.Rp,
                   self.R_CUBE.L,
@@ -49,12 +49,12 @@ class App:
                   self.R_CUBE.Up,
                   self.R_CUBE.D,
                   self.R_CUBE.Dp]]
-                 
+
         self.on_render()
 
 
         self.running = True
-    
+
     def new_cube(self):
         self._display_surf.fill(App.MENU_COLOR)
         pygame.display.flip()
@@ -81,7 +81,7 @@ class App:
                     elif event.key in App.NUM_KEYS:
                         new_dimensions[index] = int(event.unicode)
 
-        if not np.any(new_dimensions == None):                
+        if not np.any(new_dimensions == None):
             self.R_CUBE = rubiks.Rubiks(new_dimensions)
             self.on_init()
 
@@ -184,13 +184,13 @@ class App:
         axes_2d = np.round(np.sum(axes*[m.sin(th2)*m.sin(th1), m.sin(th2)*m.cos(th1), m.cos(th2)], axis=1), 2)
 
         return axes[(axes_2d > 0)]
- 
+
     def draw_wireframe(self, wf, center=(400, 300), angles=None, borders=2, filled = False):
         if angles == None:
             angles = self.angles
         th1, th2 = angles
         axes_2display = self.get_visible_axes(angles)
-        
+
 
         for a in axes_2display:
             if not (a==0).all():
@@ -220,7 +220,7 @@ class App:
             pygame.draw.polygon(self._display_surf, border_color, corners, width=borders)
         if color != None:
             pygame.draw.polygon(self._display_surf, color, corners)
-        
+
     def on_execute(self):
         pygame.init()
         if self.on_init() == False:
@@ -236,7 +236,7 @@ class App:
         self.on_cleanup()
 
     def on_cleanup(self):
-        pygame.display.quit() 
+        pygame.display.quit()
         pygame.quit()
 
     def scramble_cube(self, n=None):
@@ -245,7 +245,14 @@ class App:
 
         for _ in range(n):
             axis = random.randint(0, 2)
+
             depth = random.randint(0, self.R_CUBE.dim[axis]-1)
+            if depth == (self.R_CUBE.dim[axis]-1)/2:
+                if random.randint(0, 2) == 1:
+                    depth += 1
+                else:
+                    depth -= 1
+
             face = random.randint(0, len(self.MOVES[axis])-1)
 
             self.MOVES[axis][face](depth)
