@@ -1,4 +1,4 @@
 from app import app
 
-app = App.app()
+app = app.App()
 app.on_execute()

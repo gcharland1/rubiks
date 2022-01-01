@@ -2,8 +2,8 @@ import numpy as np
 import math as m
 import pygame
 import random
-import rubiks
-import transform
+from bin import rubiks
+from bin import transform
 
 class App:
     NUM_KEYS = [pygame.K_0,
