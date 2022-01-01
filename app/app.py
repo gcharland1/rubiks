@@ -2,7 +2,7 @@ import numpy as np
 import math as m
 import pygame
 import random
-from bin import rubiks
+from app import rubiks
 from bin import transform
 
 class App:
@@ -36,6 +36,7 @@ class App:
 
     def on_init(self):
         self._display_surf = pygame.display.set_mode(self.size)
+        self.font = pygame.font.SysFont('Arial', 30)
 
         self.MOVES = [[self.R_CUBE.R,
                   self.R_CUBE.Rp,
@@ -51,18 +52,18 @@ class App:
                   self.R_CUBE.Dp]]
 
         self.on_render()
-
-
         self.running = True
 
     def new_cube(self):
-        self._display_surf.fill(App.MENU_COLOR)
-        pygame.display.flip()
 
         new_dimensions = np.array([None, None, None])
         index = 0
         return_to_game = False
         while not return_to_game:
+            self._display_surf.fill(App.MENU_COLOR)
+            self.display_text(str(new_dimensions))
+            pygame.display.flip()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -84,6 +85,12 @@ class App:
         if not np.any(new_dimensions == None):
             self.R_CUBE = rubiks.Rubiks(new_dimensions)
             self.on_init()
+
+    def display_text(self, text_str):
+        text_obj = self.font.render(str(text_str), False, (0, 0, 0))
+        self._display_surf.blit(text_obj, (0, 0))
+        return
+
 
     def on_event(self, event):
         if event.type == pygame.QUIT:
