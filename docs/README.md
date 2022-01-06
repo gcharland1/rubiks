@@ -1,9 +1,9 @@
 # Rubiks Cube - V1.0
 
 ## How to run
-- Setup a venv
+- Setup a virtual environment
 - Install requirements.txt
-- `python3 main.py`
+- run `python3 run.py`
 
 ## How to use the app
 
@@ -11,29 +11,40 @@
 - Use the arrow keys to rotate the view
 
 ### Turn the faces
-- Use the `R, L, F, B, U, D` keys to turn clockwisew
-- Press shift+key to move counter-clockwise
+- Use the `R, L, F, B, U, D` keys to turn clockwise
+- Press `shift+key` to move counter-clockwise
+- User numbers 0 to 9 to set the slice index (For 4x4x4 and up)
+- Legend:
+	- R: Red face
+	- L: Orange face
+	- F: Blue face
+	- B: Green face
+	- U: Yellow face
+	- D: White face
+
+### Shuffle the cube
+- To shuffle the cube, enter `Ctrl+SPACE`
 
 ### Start a fresh game
-- Enter menu by pressing Ctrl+SPACE
-- You now enter each dimension one by one
-	- To change dimension, press TAB
+- Enter the menu by pressing `Ctrl+ENTER`
+- Enter each dimension one by one, followed by the TAB key
 
 #### Example
-- CTRL+SPACE (Now un menu, green display)
-- Press 6 (Sets new cube x dimension to 6)
+- `CTRL+ENTER` (Screen turns green)
+- Press 6 (Sets new cube x dimension to 4)
 - Press TAB (Go to y dimension editing)
 - Press 4 (Sets new cube y dimension to 4)
 - Press TAB (Go to z dimension)
 - Press 4 (Sets the z dimension to 4)
 - Press TAB (Optionnal, go back to setting x dimension)
-- Press ENTER (Call a new cube, game resumes with new cube)
+- Press ENTER 
+- You now can play with a 4x4x4 cube
 
 #### Notes
-- Even if you CAN generate a Cuboid (All different dimensions), the cube will only turn faces that have equal dimensions (4X4 for example)
+- Even if you CAN generate a Cuboid (All different dimensions), for now, the cube only turn faces that have equal dimensions (4X4 for example)
 
 ### Quit the app
-- Press Ctrl+Q
+- Press `Ctrl+Q`
 
 ## Screenshots
 ![image](https://user-images.githubusercontent.com/76267249/106371658-e2d52200-6334-11eb-8a98-4b5e9473578e.png)
