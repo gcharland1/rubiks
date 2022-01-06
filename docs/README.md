@@ -31,13 +31,13 @@
 
 #### Example
 - `CTRL+ENTER` (Screen turns green)
-- Press 6 (Sets new cube x dimension to 4)
-- Press TAB (Go to y dimension editing)
-- Press 4 (Sets new cube y dimension to 4)
-- Press TAB (Go to z dimension)
-- Press 4 (Sets the z dimension to 4)
-- Press TAB (Optionnal, go back to setting x dimension)
-- Press ENTER 
+- Press `4` (Sets new cube x dimension to 4)
+- Press `TAB` (Go to y dimension editing)
+- Press `4` (Sets new cube y dimension to 4)
+- Press `TAB` (Go to z dimension)
+- Press `4` (Sets the z dimension to 4)
+- Press `TAB` (Optionnal, go back to setting x dimension)
+- Press `ENTER` 
 - You now can play with a 4x4x4 cube
 
 #### Notes
