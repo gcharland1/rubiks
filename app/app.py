@@ -26,7 +26,6 @@ class App:
     angles = [m.pi / 6, m.pi / 3]
     sensitivity = [m.pi / 12, m.pi / 12]
 
-
     def __init__(self):
         self.running = True
         self._display_surf = None
@@ -163,8 +162,8 @@ class App:
                     self.angles[0] -= event.rel[0]/increment
                     self.angles[1] -= event.rel[1]/increment
 
-
-
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+           face = self.get_face(event.pos) 
 
 
     def on_loop(self):
@@ -235,6 +234,33 @@ class App:
                     border_color = (200, 200, 200)
 
                 self.draw_polygon(corners_tup, color, borders=borders, border_color=border_color) 
+
+    def get_face(self, coordinates):
+        visible_faces = self.get_visible_axes(self.angles)
+        visible_frames = []
+        for _ in range(len(visible_faces)):
+            direction = sum(visible_faces[_])
+            frames = self.R_CUBE.get_face(_, direction)
+            visible_frames.append(frames)
+
+        corner_coordinates = [(0, 0)*len(visible_frames)]
+        for face in range(len(visible_faces)):
+            min_x = 1000
+            min_y = 1000 
+            max_y = 0
+            max_x = 0
+
+            for frame in visible_frames[face]:
+                corners = transform.project_2d(frame.corners, self.angles[0], self.angles[1])
+                min_y = min(min_y, min(corners[:,0]))
+                max_y = max(max_y, max(corners[:,0]))
+                min_x = min(min_x, min(corners[:,1]))
+                max_x = max(max_x, max(corners[:,1]))
+            
+        print("Function needs completion.")
+        print("\t- compute sum(angles) between mouse coordinates and 4 sides") 
+
+        return [1, 0, 0]
 
     def draw_polygon(self, corners, color = None, borders=2, border_color=(255,255,255)):
         if borders != 0:
