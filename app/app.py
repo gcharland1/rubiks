@@ -122,6 +122,7 @@ class App:
                     self.R_CUBE.Dp(self.s_i)
                 elif event.key == pygame.K_b:
                     self.R_CUBE.Bp(self.s_i)
+                
 
             else:
                 if event.key == pygame.K_RIGHT:
@@ -145,6 +146,26 @@ class App:
                     self.R_CUBE.D(self.s_i)
                 elif event.key == pygame.K_b:
                     self.R_CUBE.B(self.s_i)
+
+        elif event.type == pygame.MOUSEWHEEL:
+            increment = 20
+            axis = pygame.key.get_mods()
+            self.angles[axis] += -1*event.y*(np.pi/2)/increment
+
+        elif event.type == pygame.MOUSEMOTION:
+            if pygame.mouse.get_pressed()[0]:
+                increment = 100
+                if abs(event.rel[0]) > abs(3*event.rel[1]):
+                    self.angles[0] -= event.rel[0]/increment
+                elif abs(event.rel[1]) > abs(3*event.rel[0]):
+                    self.angles[1] -= event.rel[1]/increment
+                else:
+                    self.angles[0] -= event.rel[0]/increment
+                    self.angles[1] -= event.rel[1]/increment
+
+
+
+
 
     def on_loop(self):
         pass
