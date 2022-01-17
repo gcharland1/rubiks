@@ -1,4 +1,5 @@
 import numpy as np
+import time
 import math as m
 import pygame
 import random
@@ -147,24 +148,54 @@ class App:
                     self.R_CUBE.B(self.s_i)
 
         elif event.type == pygame.MOUSEWHEEL:
-            increment = 20
-            axis = pygame.key.get_mods()
-            self.angles[axis] += -1*event.y*(np.pi/2)/increment
+            increment = 2*np.pi/20
+            axis = min(1, pygame.key.get_mods())
+            self.angles[axis] += -1*event.y*increment
 
         elif event.type == pygame.MOUSEMOTION:
             if pygame.mouse.get_pressed()[0]:
-                increment = 100
-                if abs(event.rel[0]) > abs(3*event.rel[1]):
-                    self.angles[0] -= event.rel[0]/increment
-                elif abs(event.rel[1]) > abs(3*event.rel[0]):
-                    self.angles[1] -= event.rel[1]/increment
-                else:
-                    self.angles[0] -= event.rel[0]/increment
-                    self.angles[1] -= event.rel[1]/increment
+                increment = 2*np.pi/400
+                self.angles[0] -= event.rel[0]*increment
+                self.angles[1] -= event.rel[1]*increment
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-           face = self.get_face(event.pos) 
+            face = self.get_face(event.pos) 
+            if np.sum(face) != 0:
+                axis = np.where(face != 0)[0]
+                direction = np.sum(face)
+                if pygame.mouse.get_pressed()[0]:
+                    if axis == 0:
+                        if direction > 0:
+                            self.R_CUBE.R(0)
+                        else:
+                            self.R_CUBE.L(0)
+                    elif axis == 1:
+                        if direction > 0:
+                            self.R_CUBE.F(0)
+                        else:
+                            self.R_CUBE.B(0)
+                    elif axis == 2:
+                        if direction > 0:
+                            self.R_CUBE.U(0)
+                        else:
+                            self.R_CUBE.D(0)
 
+                elif pygame.mouse.get_pressed()[2]:
+                    if axis == 0:
+                        if direction > 0:
+                            self.R_CUBE.Rp(0)
+                        else:
+                            self.R_CUBE.Lp(0)
+                    elif axis == 1:
+                        if direction > 0:
+                            self.R_CUBE.Fp(0)
+                        else:
+                            self.R_CUBE.Bp(0)
+                    elif axis == 2:
+                        if direction > 0:
+                            self.R_CUBE.Up(0)
+                        else:
+                            self.R_CUBE.Dp(0)
 
     def on_loop(self):
         pass
@@ -221,7 +252,7 @@ class App:
                 corners = transform.project_2d(corners, th1, th2) + np.array(center).reshape((1, 2, 1))
                 corners_tup = []
                 for c in corners:
-                    corners_tup.append(tuple(c))
+                    corners_tup.append((c[0][0], c[1][0]))
 
                 if filled:
                     if direction == -1:
@@ -235,32 +266,34 @@ class App:
 
                 self.draw_polygon(corners_tup, color, borders=borders, border_color=border_color) 
 
-    def get_face(self, coordinates):
-        visible_faces = self.get_visible_axes(self.angles)
-        visible_frames = []
-        for _ in range(len(visible_faces)):
-            direction = sum(visible_faces[_])
-            frames = self.R_CUBE.get_face(_, direction)
-            visible_frames.append(frames)
+    def get_face(self, coordinates, center = (400, 300)):
+        x, y = coordinates
+        visible_axes = self.get_visible_axes()
+        for axis in range(len(visible_axes)):
+            direction = visible_axes[axis][axis]
 
-        corner_coordinates = [(0, 0)*len(visible_frames)]
-        for face in range(len(visible_faces)):
-            min_x = 1000
-            min_y = 1000 
-            max_y = 0
-            max_x = 0
+            face_corners = transform.project_2d(self.R_CUBE.get_face_corners(axis, direction), self.angles[0], self.angles[1])  + np.array(center).reshape((1, 2, 1))
+            face_corners = face_corners[[0, 1, 3, 2]]
 
-            for frame in visible_frames[face]:
-                corners = transform.project_2d(frame.corners, self.angles[0], self.angles[1])
-                min_y = min(min_y, min(corners[:,0]))
-                max_y = max(max_y, max(corners[:,0]))
-                min_x = min(min_x, min(corners[:,1]))
-                max_x = max(max_x, max(corners[:,1]))
-            
-        print("Function needs completion.")
-        print("\t- compute sum(angles) between mouse coordinates and 4 sides") 
+            corners_tup = [(c[0][0], c[1][0]) for c in face_corners]
+            if self.coordinates_in_polygon(coordinates, face_corners):
+                return visible_axes[axis]
 
-        return [1, 0, 0]
+        return [0, 0, 0]
+
+    def coordinates_in_polygon(self, coordinates, corners):
+        th = 0
+        for i in range(4):
+            j = (i + 1)%4
+            AB = np.array([coordinates[0] - corners[i][0], coordinates[1] - corners[i][1]]).flatten()
+            AC = np.array([coordinates[0] - corners[j][0], coordinates[1] - corners[j][1]]).flatten()
+            th += m.acos(np.dot(AB, AC)/(np.linalg.norm(AB)*np.linalg.norm(AC)))
+
+        if abs(th - 2*np.pi) < 0.01:
+            return True
+        else:
+            return False
+    
 
     def draw_polygon(self, corners, color = None, borders=2, border_color=(255,255,255)):
         if borders != 0:

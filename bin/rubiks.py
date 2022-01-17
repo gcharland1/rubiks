@@ -174,6 +174,21 @@ class Rubiks:
 
         return pieces.ravel()
 
+    def get_face_corners(self, axis=0, direction=1):
+        # [[a, +w, +w], [a, +w, -w], ...
+        w = self.width/2
+        corners = []
+        for i in [-1, 1]:
+            for j in [-1, 1]:
+                if axis == 0:
+                    corners.append([direction*w, i*w, j*w])
+                elif axis == 1:
+                    corners.append([j*w, direction*w, i*w])
+                elif axis == 2:
+                    corners.append([i*w, j*w, direction*w])
+
+        return np.array(corners)
+
 
 if __name__ == '__main__':
     cube = Rubiks()
