@@ -163,24 +163,7 @@ class App:
             if np.sum(face) != 0:
                 axis = np.where(face != 0)[0]
                 direction = np.sum(face)
-                if pygame.mouse.get_pressed()[0]:
-                    if axis == 0:
-                        if direction > 0:
-                            self.R_CUBE.R(0)
-                        else:
-                            self.R_CUBE.L(0)
-                    elif axis == 1:
-                        if direction > 0:
-                            self.R_CUBE.F(0)
-                        else:
-                            self.R_CUBE.B(0)
-                    elif axis == 2:
-                        if direction > 0:
-                            self.R_CUBE.U(0)
-                        else:
-                            self.R_CUBE.D(0)
-
-                elif pygame.mouse.get_pressed()[2]:
+                if pygame.mouse.get_pressed() and pygame.key.get_mods():
                     if axis == 0:
                         if direction > 0:
                             self.R_CUBE.Rp(0)
@@ -197,6 +180,23 @@ class App:
                         else:
                             self.R_CUBE.Dp(0)
 
+                elif pygame.mouse.get_pressed()[0]:
+                    if axis == 0:
+                        if direction > 0:
+                            self.R_CUBE.R(0)
+                        else:
+                            self.R_CUBE.L(0)
+                    elif axis == 1:
+                        if direction > 0:
+                            self.R_CUBE.F(0)
+                        else:
+                            self.R_CUBE.B(0)
+                    elif axis == 2:
+                        if direction > 0:
+                            self.R_CUBE.U(0)
+                        else:
+                            self.R_CUBE.D(0)
+                    
     def on_loop(self):
         pass
 
