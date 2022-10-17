@@ -1,7 +1,7 @@
 from bin import rubiks
 
 
-class CliApp:
+class CliInterface:
     EXIT_COMMANDS = ['Q', 'q', 'QUIT', 'Quit', 'quit']
     R_CUBE = rubiks.Rubiks(dim=[3, 3, 3])
 
