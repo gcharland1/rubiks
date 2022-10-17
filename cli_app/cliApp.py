@@ -6,23 +6,8 @@ class CliApp:
     R_CUBE = rubiks.Rubiks(dim=[3, 3, 3])
 
     def __init__(self):
-        self.running = False
-
-    def convert_color(self, color_tuple):
-        if color_tuple == (255, 0, 0):
-            return 'R'
-        elif color_tuple == (255, 126, 0):
-            return 'O'
-        elif color_tuple == (0, 0, 255):
-            return 'B'
-        elif color_tuple == (62, 225, 62):
-            return 'G'
-        elif color_tuple == (255, 255, 255):
-            return 'W'
-        elif color_tuple == (255, 255, 0):
-            return 'Y'
-
-        return '?'
+        self.running = True
+        self.is_solved = False
 
     def on_event(self, event):
         if event in self.EXIT_COMMANDS:
@@ -60,13 +45,13 @@ class CliApp:
             self.R_CUBE.D()
             self.R_CUBE.D()
         # F moves
-        elif event == 'L':
-            self.R_CUBE.L()
-        elif event == 'Lp':
-            self.R_CUBE.Lp()
-        elif event == 'L2':
-            self.R_CUBE.L()
-            self.R_CUBE.L()
+        elif event == 'F':
+            self.R_CUBE.F()
+        elif event == 'Fp':
+            self.R_CUBE.Fp()
+        elif event == 'F2':
+            self.R_CUBE.F()
+            self.R_CUBE.F()
         # B moves
         elif event == 'B':
             self.R_CUBE.B()
@@ -77,15 +62,15 @@ class CliApp:
             self.R_CUBE.B()
 
     def on_execute(self):
-        self.running = True
-
-        while self.running:
+        while self.running and not self.is_solved:
             next_move = input('Next Move: ')
             self.on_event(next_move)
-            #self.print_cube()
-            self.get_cube()
+            _, self.is_solved = self.get_cube()
 
-        print('Exiting the app.')
+        if self.is_solved:
+            print('Congratulations!!!')
+        else:
+            print('Exiting the app.')
 
     def print_cube(self):
         for depth in [-1, 1]:
@@ -94,7 +79,7 @@ class CliApp:
                 n = 0
                 output = ''
                 for _ in self.R_CUBE.get_face(axis, depth):
-                    sticker_color = self.convert_color(_.colors[axis])
+                    sticker_color = convert_color(_.colors[axis])
                     output += ' ' + sticker_color
                     n += 1
                     if n % 3 == 0:
@@ -102,14 +87,33 @@ class CliApp:
                         output = ''
 
     def get_cube(self):
+        is_solved = True
         cube = []
         for depth in [-1, 1]:
             for axis in [0, 1, 2]:
                 face_array = []
                 for _ in self.R_CUBE.get_face(axis, depth):
-                    sticker_color = self.convert_color(_.colors[axis])
+                    sticker_color = convert_color(_.colors[axis])
+                    if len(face_array) > 0 and sticker_color != face_array[-1]:
+                        is_solved = False
                     face_array.append(sticker_color)
-
                 cube.append(face_array)
 
-        return cube
+        return cube, is_solved
+
+# Static methods
+def convert_color(color_tuple):
+    if color_tuple == (255, 0, 0):
+        return 'R'
+    elif color_tuple == (255, 126, 0):
+        return 'O'
+    elif color_tuple == (0, 0, 255):
+        return 'B'
+    elif color_tuple == (62, 225, 62):
+        return 'G'
+    elif color_tuple == (255, 255, 255):
+        return 'W'
+    elif color_tuple == (255, 255, 0):
+        return 'Y'
+
+    return '?'
