@@ -1,5 +1,8 @@
 import numpy as np
-from bin import wireframe
+try:
+    from bin import wireframe
+except Exception as e:
+    import wireframe
 
 
 class Rubiks:

@@ -6,6 +6,7 @@ import random
 from bin import rubiks
 from bin import transform
 
+
 class App:
     NUM_KEYS = [pygame.K_0,
                 pygame.K_1,
@@ -17,7 +18,6 @@ class App:
                 pygame.K_7,
                 pygame.K_8,
                 pygame.K_9]
-
 
     BORDER_COLORS = (0, 0, 0)
     MENU_COLOR = (50, 80, 50)
@@ -38,20 +38,19 @@ class App:
         self._display_surf = pygame.display.set_mode(self.size)
 
         self.MOVES = [[self.R_CUBE.R,
-                  self.R_CUBE.Rp,
-                  self.R_CUBE.L,
-                  self.R_CUBE.Lp],
-                 [self.R_CUBE.F,
-                  self.R_CUBE.Fp,
-                  self.R_CUBE.B,
-                  self.R_CUBE.Bp],
-                 [self.R_CUBE.U,
-                  self.R_CUBE.Up,
-                  self.R_CUBE.D,
-                  self.R_CUBE.Dp]]
+                       self.R_CUBE.Rp,
+                       self.R_CUBE.L,
+                       self.R_CUBE.Lp],
+                      [self.R_CUBE.F,
+                       self.R_CUBE.Fp,
+                       self.R_CUBE.B,
+                       self.R_CUBE.Bp],
+                      [self.R_CUBE.U,
+                       self.R_CUBE.Up,
+                       self.R_CUBE.D,
+                       self.R_CUBE.Dp]]
 
         self.on_render()
-
 
         self.running = True
 
@@ -102,13 +101,13 @@ class App:
 
             elif event.mod & pygame.KMOD_SHIFT:
                 if event.key == pygame.K_RIGHT:
-                    self.angles[0] -= np.pi/2
+                    self.angles[0] -= np.pi / 2
                 elif event.key == pygame.K_LEFT:
-                    self.angles[0] += np.pi/2
+                    self.angles[0] += np.pi / 2
                 elif event.key == pygame.K_UP:
-                    self.angles[1] += np.pi/2
+                    self.angles[1] += np.pi / 2
                 elif event.key == pygame.K_DOWN:
-                    self.angles[1] -= np.pi/2
+                    self.angles[1] -= np.pi / 2
 
                 if event.key == pygame.K_r:
                     self.R_CUBE.Rp(self.s_i)
@@ -122,7 +121,7 @@ class App:
                     self.R_CUBE.Dp(self.s_i)
                 elif event.key == pygame.K_b:
                     self.R_CUBE.Bp(self.s_i)
-                
+
 
             else:
                 if event.key == pygame.K_RIGHT:
@@ -148,18 +147,18 @@ class App:
                     self.R_CUBE.B(self.s_i)
 
         elif event.type == pygame.MOUSEWHEEL:
-            increment = 2*np.pi/20
+            increment = 2 * np.pi / 20
             axis = min(1, pygame.key.get_mods())
-            self.angles[axis] += -1*event.y*increment
+            self.angles[axis] += -1 * event.y * increment
 
         elif event.type == pygame.MOUSEMOTION:
             if pygame.mouse.get_pressed()[0]:
-                increment = 2*np.pi/400
-                self.angles[0] -= event.rel[0]*increment
-                self.angles[1] -= event.rel[1]*increment
+                increment = 2 * np.pi / 400
+                self.angles[0] -= event.rel[0] * increment
+                self.angles[1] -= event.rel[1] * increment
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            face = self.get_face(event.pos) 
+            face = self.get_face(event.pos)
             if np.sum(face) != 0:
                 axis = np.where(face != 0)[0]
                 direction = np.sum(face)
@@ -196,7 +195,7 @@ class App:
                             self.R_CUBE.U(0)
                         else:
                             self.R_CUBE.D(0)
-                    
+
     def on_loop(self):
         pass
 
@@ -210,8 +209,8 @@ class App:
         axes_2display = self.get_visible_axes(self.angles)
         th1, th2 = self.angles
         for a in axes_2display:
-            if not (a==0).all():
-                axis = np.where(a!=0)[0][0]
+            if not (a == 0).all():
+                axis = np.where(a != 0)[0][0]
                 d = sum(a)
                 for wf in self.R_CUBE.get_face(axis, d):
                     corners = wf.get_face(axis, d)
@@ -222,31 +221,30 @@ class App:
                         corners_tup.append((c[0][0], c[1][0]))
 
                     color = wf.colors[axis]
-                    if not color == None:
+                    if not color is None:
                         self.draw_polygon(corners_tup, color, borders=8, border_color=self.BORDER_COLORS)
 
-    def get_visible_axes(self, angles = None):
+    def get_visible_axes(self, angles=None):
         if angles == None:
             angles = self.angles
         th1, th2 = angles
         axes = np.array([[1, 0, 0], [-1, 0, 0],
                          [0, 1, 0], [0, -1, 0],
                          [0, 0, 1], [0, 0, -1]])
-        axes_2d = np.round(np.sum(axes*[m.sin(th2)*m.sin(th1), m.sin(th2)*m.cos(th1), m.cos(th2)], axis=1), 2)
+        axes_2d = np.round(np.sum(axes * [m.sin(th2) * m.sin(th1), m.sin(th2) * m.cos(th1), m.cos(th2)], axis=1), 2)
 
         return axes[(axes_2d > 0)]
 
-    def draw_wireframe(self, wf, center=(400, 300), angles=None, borders=2, filled = False):
-        if angles == None:
+    def draw_wireframe(self, wf, center=(400, 300), angles=None, borders=2, filled=False):
+        if angles is None:
             angles = self.angles
         th1, th2 = angles
         axes_2display = self.get_visible_axes(angles)
 
-
         for a in axes_2display:
-            if not (a==0).all():
-                axis = np.where(a!=0)[0][0]
-                direction =sum(a)
+            if not (a == 0).all():
+                axis = np.where(a != 0)[0][0]
+                direction = sum(a)
                 corners = wf.get_face(axis, direction)
                 corners = corners[[0, 1, 3, 2]]
                 corners = transform.project_2d(corners, th1, th2) + np.array(center).reshape((1, 2, 1))
@@ -264,15 +262,16 @@ class App:
                     color = None
                     border_color = (200, 200, 200)
 
-                self.draw_polygon(corners_tup, color, borders=borders, border_color=border_color) 
+                self.draw_polygon(corners_tup, color, borders=borders, border_color=border_color)
 
-    def get_face(self, coordinates, center = (400, 300)):
+    def get_face(self, coordinates, center=(400, 300)):
         x, y = coordinates
         visible_axes = self.get_visible_axes()
         for axis in range(len(visible_axes)):
             direction = visible_axes[axis][axis]
 
-            face_corners = transform.project_2d(self.R_CUBE.get_face_corners(axis, direction), self.angles[0], self.angles[1])  + np.array(center).reshape((1, 2, 1))
+            face_corners = transform.project_2d(self.R_CUBE.get_face_corners(axis, direction), self.angles[0],
+                                                self.angles[1]) + np.array(center).reshape((1, 2, 1))
             face_corners = face_corners[[0, 1, 3, 2]]
 
             corners_tup = [(c[0][0], c[1][0]) for c in face_corners]
@@ -284,18 +283,17 @@ class App:
     def coordinates_in_polygon(self, coordinates, corners):
         th = 0
         for i in range(4):
-            j = (i + 1)%4
+            j = (i + 1) % 4
             AB = np.array([coordinates[0] - corners[i][0], coordinates[1] - corners[i][1]]).flatten()
             AC = np.array([coordinates[0] - corners[j][0], coordinates[1] - corners[j][1]]).flatten()
-            th += m.acos(np.dot(AB, AC)/(np.linalg.norm(AB)*np.linalg.norm(AC)))
+            th += m.acos(np.dot(AB, AC) / (np.linalg.norm(AB) * np.linalg.norm(AC)))
 
-        if abs(th - 2*np.pi) < 0.01:
+        if abs(th - 2 * np.pi) < 0.01:
             return True
         else:
             return False
-    
 
-    def draw_polygon(self, corners, color = None, borders=2, border_color=(255,255,255)):
+    def draw_polygon(self, corners, color=None, borders=2, border_color=(255, 255, 255)):
         if borders != 0:
             pygame.draw.polygon(self._display_surf, border_color, corners, width=borders)
         if color != None:
@@ -321,23 +319,23 @@ class App:
 
     def scramble_cube(self, n=None):
         if n is None:
-            n = max([np.prod(self.R_CUBE.dim)//2, 100])
+            n = max([np.prod(self.R_CUBE.dim) // 2, 100])
 
         for _ in range(n):
             axis = random.randint(0, 2)
 
-            depth = random.randint(0, self.R_CUBE.dim[axis]-1)
-            if depth == (self.R_CUBE.dim[axis]-1)/2:
+            depth = random.randint(0, self.R_CUBE.dim[axis] - 1)
+            if depth == (self.R_CUBE.dim[axis] - 1) / 2:
                 if random.randint(0, 2) == 1:
                     depth += 1
                 else:
                     depth -= 1
 
-            face = random.randint(0, len(self.MOVES[axis])-1)
+            face = random.randint(0, len(self.MOVES[axis]) - 1)
 
             self.MOVES[axis][face](depth)
 
 
 if __name__ == '__main__':
-   app = App()
-   app.on_execute()
+    app = App()
+    app.on_execute()
